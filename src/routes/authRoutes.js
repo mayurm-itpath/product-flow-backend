@@ -41,9 +41,17 @@ router.post("/signup", async (req, res) => {
 
     res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
 
-    return res
-      .status(201)
-      .json({ message: "User registered successfully", newUser, token });
+    return res.status(201).json({
+      message: "User registered successfully",
+      user: {
+        id: newUser._id,
+        firstName: newUser.firstName,
+        lastName: newUser.lastName,
+        email: newUser.email,
+        phone: newUser.phone,
+      },
+      token,
+    });
   } catch (error) {
     console.error("Error in signup:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -77,7 +85,18 @@ router.post("/login", async (req, res) => {
 
     res.cookie("token", token, { httpOnly: true, maxAge: 60 * 60 * 1000 });
 
-    return res.status(200).json({ message: "Login successful", user, token });
+    return res.status(200).json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone,
+        profilePicId: user?.profilePicId,
+      },
+      token,
+    });
   } catch (error) {
     console.error("Error in login:", error);
     return res.status(500).json({ message: "Internal server error" });
@@ -95,6 +114,7 @@ router.post("/logout", (req, res) => {
   }
 });
 
+// forgot password route
 router.post("/forgot-password", async (req, res) => {
   try {
     const { email } = req.body;
@@ -133,6 +153,7 @@ router.post("/forgot-password", async (req, res) => {
   }
 });
 
+// reset password route
 router.post("/reset-password/:token", async (req, res) => {
   try {
     const { token } = req.params;
